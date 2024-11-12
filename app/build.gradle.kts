@@ -15,8 +15,13 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+
+        buildConfigField("String", "public_key", "\"082f6426bdd8e2645731fbb226271bd6\"")
+        buildConfigField ("String", "private_key", "\"99f753cb33c0a32fd95e4cd9e7fce40b8a243d59\"")
+        buildConfigField ("String", "base_url", "\"https://gateway.marvel.com/v1/public/\"")
+
         vectorDrawables {
             useSupportLibrary = true
         }
