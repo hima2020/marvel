@@ -36,10 +36,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
+import com.google.gson.Gson
 import org.rawafedtech.marvelapp.R
 import org.rawafedtech.marvelapp.components.EmptyView
 import org.rawafedtech.marvelapp.data.model.CharacterItem
 import org.rawafedtech.marvelapp.presentation.home.viewmodel.HomeViewModel
+import org.rawafedtech.marvelapp.ui.navigation.NavigationScreens
 import org.rawafedtech.marvelapp.ui.theme.Black80
 import org.rawafedtech.marvelapp.utils.ParallelogramShape
 
@@ -142,7 +144,13 @@ fun CharacterItem(
     Box(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-            //TODO Navigate To Details Screen And Passing the marvel obj
+            navController.navigate(
+                NavigationScreens.Details.screenRoute + "?character=${
+                    Gson().toJson(
+                        character
+                    )
+                }"
+            )
         }) {
         Image(
             painter = rememberAsyncImagePainter(model = "${character.thumbnail?.path}.${character.thumbnail?.extension}"),
