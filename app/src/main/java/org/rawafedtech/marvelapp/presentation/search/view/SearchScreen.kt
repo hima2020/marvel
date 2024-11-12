@@ -7,7 +7,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,15 +21,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -98,8 +91,6 @@ fun CharachterSearchItem(
     character: CharacterItem,
     navController: NavController
 ) {
-    var isPressed by remember { mutableStateOf(false) }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -110,33 +101,33 @@ fun CharachterSearchItem(
                 )
             }
             .animateContentSize()
-            .pointerInput(Unit) { detectTapGestures(onPress = { isPressed = true }) }
     ) {
-        Crossfade(targetState = "${character.thumbnail?.path}.${character.thumbnail?.extension}") { imageUrl ->
+
             Image(
-                painter = rememberAsyncImagePainter(model = imageUrl),
+                painter = rememberAsyncImagePainter(model ="${character.thumbnail?.path}.${character.thumbnail?.extension}"),
                 contentDescription = character.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(100.dp)
-                    .scale(if (isPressed) 1.05f else 1f)
             )
-        }
 
-        Column(modifier = Modifier.padding(15.dp)) {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .shadow(if (isPressed) 8.dp else 2.dp)
-            ) {
-                Text(
-                    text = character.name.orEmpty(),
-                    color = colorResource(R.color.white),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
+
+            Column(modifier = Modifier.padding(15.dp)) {
+                Box(
                     modifier = Modifier
-                )
-            }
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+
+                ) {
+                    Text(
+                        text = character.name.orEmpty(),
+                        color = colorResource(R.color.white),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                    )
+                }
+
         }
     }
 }
+
