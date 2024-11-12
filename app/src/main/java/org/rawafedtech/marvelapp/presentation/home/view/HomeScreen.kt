@@ -38,7 +38,6 @@ import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.google.gson.Gson
 import org.rawafedtech.marvelapp.R
-import org.rawafedtech.marvelapp.components.LoadingView
 import org.rawafedtech.marvelapp.components.ErrorPlaceholder
 import org.rawafedtech.marvelapp.data.model.CharacterItem
 import org.rawafedtech.marvelapp.presentation.home.viewmodel.HomeViewModel
@@ -55,9 +54,7 @@ fun HomeScreen(
     val state = viewModel.statePaging
     Scaffold { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            if (state.isLoading) {
-                LoadingView(message = stringResource(R.string.empty))
-            } else {
+
                 Column (modifier = Modifier.background(Black80)){
                     Header { navController.navigate(NavigationScreens.Search.screenRoute) }
                     MarvelCharacterList(
@@ -79,7 +76,7 @@ fun HomeScreen(
                 }
 
             }
-        }
+
     }
 }
 
