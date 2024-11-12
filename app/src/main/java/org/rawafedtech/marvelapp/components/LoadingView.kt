@@ -22,11 +22,10 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import org.rawafedtech.marvelapp.R
 
 @Composable
-fun EmptyView(message: String) {
+fun LoadingView(message: String) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie_search))
     Box(
         modifier = Modifier
-            .semantics { testTag = "EMPTY_VIEW" }
             .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {

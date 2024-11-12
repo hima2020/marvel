@@ -1,5 +1,6 @@
 package org.rawafedtech.marvelapp.presentation.details.view
 
+import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,10 +22,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,10 +46,10 @@ fun CharacterDetailScreen(
     viewModel: DetailsViewModel = hiltViewModel()
 ) {
     viewModel.setCharId(selectedCharacterItem?.id!!)
-
     Column(
         modifier = Modifier.background(Color.DarkGray)
     ) {
+
         Surface(
             modifier = Modifier
                 .height(200.dp)
@@ -73,6 +76,19 @@ fun CharacterDetailScreen(
                         .clickable { navController.navigateUp() }
                 )
             }
+        }
+
+        if (!viewModel.stateEventsMarvel.error.isNullOrEmpty()) {
+            Toast.makeText(LocalContext.current, "Cannot Get The Events", Toast.LENGTH_LONG).show()
+        }
+        if (!viewModel.stateStoriesMarvel.error.isNullOrEmpty()) {
+            Toast.makeText(LocalContext.current, "Cannot Get The Stories", Toast.LENGTH_LONG).show()
+        }
+        if (!viewModel.stateSeriesMarvel.error.isNullOrEmpty()) {
+            Toast.makeText(LocalContext.current, "Something Went Series ", Toast.LENGTH_LONG).show()
+        }
+        if (!viewModel.stateComicsMarvel.error.isNullOrEmpty()) {
+            Toast.makeText(LocalContext.current, "Something Went Comics ", Toast.LENGTH_LONG).show()
         }
 
         LazyColumn(

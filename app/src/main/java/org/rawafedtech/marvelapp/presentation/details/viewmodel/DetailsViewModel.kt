@@ -12,16 +12,15 @@ import kotlinx.coroutines.launch
 import org.rawafedtech.marvelapp.data.model.CharacterItem
 import org.rawafedtech.marvelapp.domain.interceptor.GetComicsUseCase
 import org.rawafedtech.marvelapp.domain.interceptor.GetEventsUseCase
-import org.rawafedtech.marvelapp.domain.interceptor.GetMarvelsUseCase
 import org.rawafedtech.marvelapp.domain.interceptor.GetSeriesUseCase
 import org.rawafedtech.marvelapp.domain.interceptor.GetStoriesUseCase
 import org.rawafedtech.marvelapp.presentation.viewstate.ScreenState
 import org.rawafedtech.marvelapp.utils.DefaultPaginator
+import org.rawafedtech.marvelapp.utils.NetworkResult
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
-    private val marvelCharsUseCase: GetMarvelsUseCase,
     private val comicsUseCase: GetComicsUseCase,
     private val eventsUseCase: GetEventsUseCase,
     private val seriesUseCase: GetSeriesUseCase,
@@ -43,18 +42,29 @@ class DetailsViewModel @Inject constructor(
             stateComicsMarvel = stateComicsMarvel.copy(isLoading = it)
         },
         onRequest = { nextPage ->
-            Result.success(
-                comicsUseCase.getComics(selectedId, nextPage)
-                    .first().data?.data?.characterItems
-                    ?: listOf()
-            )
+            var result: Result<List<CharacterItem>> = Result.success(emptyList())
+            comicsUseCase.getComics(selectedId, nextPage).collect { response ->
+                result = when (response) {
+                    is NetworkResult.Success -> {
+                        Result.success(
+                            response.data?.data?.characterItems
+                                ?: listOf()
+                        )
+                    }
+
+                    else -> {
+                        Result.failure(Throwable(""))
+                    }
+                }
+            }
+            result
 
         },
         getNextKey = {
             stateComicsMarvel.page + 1
         },
         onError = {
-            stateComicsMarvel = stateComicsMarvel.copy(error = it?.localizedMessage)
+            stateComicsMarvel = stateComicsMarvel.copy(error = "Error")
         },
         onSuccess = { items, newKey ->
             stateComicsMarvel = stateComicsMarvel.copy(
@@ -74,18 +84,29 @@ class DetailsViewModel @Inject constructor(
             stateSeriesMarvel = stateSeriesMarvel.copy(isLoading = it)
         },
         onRequest = { nextPage ->
-            Result.success(
-                seriesUseCase.getSeries(selectedId, nextPage)
-                    .first().data?.data?.characterItems
-                    ?: listOf()
-            )
+            var result: Result<List<CharacterItem>> = Result.success(emptyList())
+            seriesUseCase.getSeries(selectedId, nextPage).collect { response ->
+                result = when (response) {
+                    is NetworkResult.Success -> {
+                        Result.success(
+                            response.data?.data?.characterItems
+                                ?: listOf()
+                        )
+                    }
+
+                    else -> {
+                        Result.failure(Throwable(""))
+                    }
+                }
+            }
+            result
 
         },
         getNextKey = {
             stateSeriesMarvel.page + 1
         },
         onError = {
-            stateSeriesMarvel = stateSeriesMarvel.copy(error = it?.localizedMessage)
+            stateSeriesMarvel = stateSeriesMarvel.copy(error = "Error")
         },
         onSuccess = { items, newKey ->
             stateSeriesMarvel = stateSeriesMarvel.copy(
@@ -105,25 +126,35 @@ class DetailsViewModel @Inject constructor(
 
 
     var stateEventsMarvel by mutableStateOf(ScreenState())
-
     private val eventsPaginator: DefaultPaginator<Int, CharacterItem> = DefaultPaginator(
         initialKey = stateEventsMarvel.page,
         onLoadUpdated = {
             stateEventsMarvel = stateEventsMarvel.copy(isLoading = it)
         },
         onRequest = { nextPage ->
-            Result.success(
-                eventsUseCase.getEvents(selectedId, nextPage)
-                    .first().data?.data?.characterItems
-                    ?: listOf()
-            )
+            var result: Result<List<CharacterItem>> = Result.success(emptyList())
+            eventsUseCase.getEvents(selectedId, nextPage).collect { response ->
+                result = when (response) {
+                    is NetworkResult.Success -> {
+                        Result.success(
+                            response.data?.data?.characterItems
+                                ?: listOf()
+                        )
+                    }
+
+                    else -> {
+                        Result.failure(Throwable(""))
+                    }
+                }
+            }
+            result
 
         },
         getNextKey = {
             stateEventsMarvel.page + 1
         },
         onError = {
-            stateEventsMarvel = stateEventsMarvel.copy(error = it?.localizedMessage)
+            stateEventsMarvel = stateEventsMarvel.copy(error = "Error")
         },
         onSuccess = { items, newKey ->
             stateEventsMarvel = stateEventsMarvel.copy(
@@ -157,18 +188,29 @@ class DetailsViewModel @Inject constructor(
             stateStoriesMarvel = stateStoriesMarvel.copy(isLoading = it)
         },
         onRequest = { nextPage ->
-            Result.success(
-                storiesUseCase.getStories(selectedId, nextPage)
-                    .first().data?.data?.characterItems
-                    ?: listOf()
-            )
+            var result: Result<List<CharacterItem>> = Result.success(emptyList())
+            storiesUseCase.getStories(selectedId, nextPage).collect { response ->
+                result = when (response) {
+                    is NetworkResult.Success -> {
+                        Result.success(
+                            response.data?.data?.characterItems
+                                ?: listOf()
+                        )
+                    }
+
+                    else -> {
+                        Result.failure(Throwable(""))
+                    }
+                }
+            }
+            result
 
         },
         getNextKey = {
             stateStoriesMarvel.page + 1
         },
         onError = {
-            stateStoriesMarvel = stateStoriesMarvel.copy(error = it?.localizedMessage)
+            stateStoriesMarvel = stateStoriesMarvel.copy(error ="Error")
         },
         onSuccess = { items, newKey ->
             stateStoriesMarvel = stateStoriesMarvel.copy(

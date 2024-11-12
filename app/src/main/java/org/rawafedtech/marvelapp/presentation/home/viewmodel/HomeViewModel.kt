@@ -13,6 +13,7 @@ import org.rawafedtech.marvelapp.data.model.CharacterItem
 import org.rawafedtech.marvelapp.domain.interceptor.GetMarvelsUseCase
 import org.rawafedtech.marvelapp.presentation.viewstate.ScreenState
 import org.rawafedtech.marvelapp.utils.DefaultPaginator
+import org.rawafedtech.marvelapp.utils.NetworkResult
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,17 +26,30 @@ class HomeViewModel @Inject constructor(private val marvelCharsUseCase: GetMarve
             statePaging = statePaging.copy(isLoading = it)
         },
         onRequest = { nextPage ->
-            Result.success(
-                marvelCharsUseCase.getMarvels(null, nextPage).first().data?.data?.characterItems
-                    ?: listOf()
-            )
+            var result: Result<List<CharacterItem>> = Result.success(emptyList())
+            marvelCharsUseCase.getMarvels(null, nextPage).collect { response ->
+                result = when (response) {
+                    is NetworkResult.Success -> {
+                        Result.success(
+                            response.data?.data?.characterItems
+                                ?: listOf()
+                        )
+                    }
 
+                    else -> {
+                        Result.failure(Throwable(""))
+                    }
+                }
+            }
+            result
         },
         getNextKey = {
             statePaging.page + 1
         },
         onError = {
-            statePaging = statePaging.copy(error = it?.localizedMessage)
+            statePaging = statePaging.copy(isLoading = false)
+            statePaging = statePaging.copy(error = "Error")
+
         },
         onSuccess = { items, newKey ->
             statePaging = statePaging.copy(

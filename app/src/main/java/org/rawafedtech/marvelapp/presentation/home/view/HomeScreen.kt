@@ -38,7 +38,8 @@ import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.google.gson.Gson
 import org.rawafedtech.marvelapp.R
-import org.rawafedtech.marvelapp.components.EmptyView
+import org.rawafedtech.marvelapp.components.LoadingView
+import org.rawafedtech.marvelapp.components.ErrorPlaceholder
 import org.rawafedtech.marvelapp.data.model.CharacterItem
 import org.rawafedtech.marvelapp.presentation.home.viewmodel.HomeViewModel
 import org.rawafedtech.marvelapp.ui.navigation.NavigationScreens
@@ -54,27 +55,29 @@ fun HomeScreen(
     val state = viewModel.statePaging
     Scaffold { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            if (state.items.isEmpty()) {
-                EmptyView(message = stringResource(R.string.empty))
+            if (state.isLoading) {
+                LoadingView(message = stringResource(R.string.empty))
             } else {
-                MarvelCharacterList(
-                    items = state.items,
-                    endReached = state.endReached,
-                    isLoading = state.isLoading,
-                    onLoadMore = { viewModel.loadNextItems() },
-                    onItemClick = { character ->
-                        navController.navigate(
-                            NavigationScreens.Details.screenRoute + "?character=${
-                                Gson().toJson(
-                                    character
-                                )
-                            }"
-                        )
-                    },
-                    onSearchClick = {
-                        navController.navigate(NavigationScreens.Search.screenRoute)
-                    }
-                )
+                Column (modifier = Modifier.background(Black80)){
+                    Header { navController.navigate(NavigationScreens.Search.screenRoute) }
+                    MarvelCharacterList(
+                            items = state.items,
+                        error = state.error ?: "",
+                        endReached = state.endReached,
+                        isLoading = state.isLoading,
+                        onLoadMore = { viewModel.loadNextItems() },
+                        onItemClick = { character ->
+                            navController.navigate(
+                                NavigationScreens.Details.screenRoute + "?character=${
+                                    Gson().toJson(
+                                        character
+                                    )
+                                }"
+                            )
+                        }
+                    )
+                }
+
             }
         }
     }
@@ -83,34 +86,39 @@ fun HomeScreen(
 @Composable
 fun MarvelCharacterList(
     items: List<CharacterItem>,
+    error: String?,
     endReached: Boolean,
     isLoading: Boolean,
     onLoadMore: () -> Unit,
     onItemClick: (CharacterItem) -> Unit,
-    onSearchClick: () -> Unit
 ) {
+    if (!error.isNullOrEmpty()){
+        Box(modifier = Modifier.fillMaxSize()) {
+            ErrorPlaceholder(
+                errorMessage = "Something went wrong. Please try again.",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Black80)
     ) {
-        item {
-            Header(onSearchClick)
-        }
-
-        itemsIndexed(items) { i, item ->
-            if (i >= items.size - 3 && !endReached && !isLoading) {
-                onLoadMore()
+            itemsIndexed(items) { i, item ->
+                if (i >= items.size - 3 && !endReached && !isLoading) {
+                    onLoadMore()
+                }
+                CharacterItem(character = item, onClick = { onItemClick(item) })
             }
-            CharacterItem(character = item, onClick = { onItemClick(item) })
-        }
 
-        item {
-            if (isLoading) {
-                LoadingIndicator()
+            item {
+                if (isLoading) {
+                    LoadingIndicator()
+                }
             }
         }
-    }
+
 }
 
 @Composable

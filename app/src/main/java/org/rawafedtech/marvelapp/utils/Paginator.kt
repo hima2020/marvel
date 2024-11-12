@@ -15,26 +15,40 @@ class DefaultPaginator<Key, Item>(
     private inline val onError: suspend (Throwable?) -> Unit,
     private inline val onSuccess: suspend (items: List<Item>, newKey: Key) -> Unit
 ) : Paginator<Key, Item> {
-
     private var currentKey = initialKey
     private var isMakingRequest = false
-
     override suspend fun loadNextItems() {
-        if (isMakingRequest) {
-            return
-        }
-        isMakingRequest = true
+
+
         onLoadUpdated(true)
-        val result = onRequest(currentKey)
-        isMakingRequest = false
-        val items = result.getOrElse {
-            onError(it)
+        val result = try {
+            onRequest(currentKey)
+        } catch (e: Throwable) {
+            onError(e)
             onLoadUpdated(false)
+            isMakingRequest = false
             return
         }
-        currentKey = getNextKey(items)
-        onSuccess(items, currentKey)
-        onLoadUpdated(false)
+        if (result.isSuccess){
+            isMakingRequest = false
+            val items = result.getOrElse {
+                onError(it)
+                onLoadUpdated(false)
+                return
+            }
+            currentKey = getNextKey(items)
+            onSuccess(items, currentKey)
+            onLoadUpdated(false)
+        }
+        else {
+            isMakingRequest = false
+            onError(Throwable(""))
+
+        }
+
+
+
+
     }
 
     override fun reset() {
