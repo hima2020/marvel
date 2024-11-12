@@ -25,13 +25,13 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun SearchView(onWordChanged: ((String) -> Unit),onCancelClicked: (() -> Unit)) {
+fun SearchView(onWordChanged: ((String) -> Unit), onCancelClicked: (() -> Unit)) {
     val query = remember { mutableStateOf("") }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(Color(0xFFF0F0F0)) // Light background color
+            .background(Color(0xFFF0F0F0))
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

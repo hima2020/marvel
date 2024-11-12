@@ -51,23 +51,43 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navController: NavController
 ) {
-
+    val state = viewModel.statePaging
     Scaffold { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues = paddingValues)) {
-            if (viewModel.statePaging.items.isEmpty()) {
+        Box(modifier = Modifier.padding(paddingValues)) {
+            if (state.items.isEmpty()) {
                 EmptyView(message = stringResource(R.string.empty))
             } else {
-                MarvelCharacterList(viewModel = viewModel, navController = navController)
+                MarvelCharacterList(
+                    items = state.items,
+                    endReached = state.endReached,
+                    isLoading = state.isLoading,
+                    onLoadMore = { viewModel.loadNextItems() },
+                    onItemClick = { character ->
+                        navController.navigate(
+                            NavigationScreens.Details.screenRoute + "?character=${
+                                Gson().toJson(
+                                    character
+                                )
+                            }"
+                        )
+                    },
+                    onSearchClick = {
+                        navController.navigate(NavigationScreens.Search.screenRoute)
+                    }
+                )
             }
         }
-
     }
 }
 
 @Composable
 fun MarvelCharacterList(
-    viewModel: HomeViewModel,
-    navController: NavController
+    items: List<CharacterItem>,
+    endReached: Boolean,
+    isLoading: Boolean,
+    onLoadMore: () -> Unit,
+    onItemClick: (CharacterItem) -> Unit,
+    onSearchClick: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -75,37 +95,26 @@ fun MarvelCharacterList(
             .background(Black80)
     ) {
         item {
-            Box(modifier = Modifier.clickable {
-            }) {
-                Header {
-                    navController.navigate(NavigationScreens.Search.screenRoute)
-                }
-            }
+            Header(onSearchClick)
         }
 
-        itemsIndexed(viewModel.statePaging.items) { i, item ->
-            if (i >= viewModel.statePaging.items.size - 1 && !viewModel.statePaging.endReached && !viewModel.statePaging.isLoading) {
-                viewModel.loadNextItems()
+        itemsIndexed(items) { i, item ->
+            if (i >= items.size - 3 && !endReached && !isLoading) {
+                onLoadMore()
             }
-            CharacterItem(character = item, navController = navController)
+            CharacterItem(character = item, onClick = { onItemClick(item) })
         }
+
         item {
-            if (viewModel.statePaging.isLoading) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+            if (isLoading) {
+                LoadingIndicator()
             }
         }
     }
 }
 
 @Composable
-fun Header(onSearchClick: (() -> Unit)) {
+fun Header(onSearchClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,9 +122,9 @@ fun Header(onSearchClick: (() -> Unit)) {
         horizontalArrangement = Arrangement.Center
     ) {
         Image(
-
             painter = painterResource(id = R.drawable.marvel_logo),
-            contentDescription = "Marvel Logo", modifier = Modifier
+            contentDescription = stringResource(R.string.app_name),
+            modifier = Modifier
                 .height(50.dp)
                 .weight(1.7f, true)
         )
@@ -123,60 +132,70 @@ fun Header(onSearchClick: (() -> Unit)) {
         IconButton(onClick = onSearchClick, modifier = Modifier.weight(0.3f, true)) {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.app_name),
                 tint = Color.Red
             )
         }
-
-
     }
 }
 
 @Composable
 fun CharacterItem(
     character: CharacterItem,
-    navController: NavController
+    onClick: () -> Unit
 ) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
-            navController.navigate(
-                NavigationScreens.Details.screenRoute + "?character=${
-                    Gson().toJson(
-                        character
-                    )
-                }"
-            )
-        }) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
         Image(
-            painter = rememberAsyncImagePainter(model = "${character.thumbnail?.path}.${character.thumbnail?.extension}"),
+            painter = rememberAsyncImagePainter(
+                model = "${character.thumbnail?.path}.${character.thumbnail?.extension}",
+                placeholder = painterResource(R.drawable.place_holder_loading),
+                error = painterResource(R.drawable.place_holder_failed)
+            ),
             contentDescription = character.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
         )
+        CharacterInfoOverlay(character.name, modifier = Modifier.align(Alignment.BottomStart))
+    }
+}
 
-        Column(
+@Composable
+fun CharacterInfoOverlay(name: String?, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .padding(15.dp)
+    ) {
+
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(15.dp)
+                .clip(ParallelogramShape(slantAngle = 15f))
+                .background(White)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(ParallelogramShape(slantAngle = 15f)) // Apply the custom parallelogram shape
-                    .background(White)
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = character.name ?: "",
-                    color = colorResource(R.color.black),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-
-            }
+            Text(
+                text = name.orEmpty(),
+                color = colorResource(R.color.black),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
         }
+    }
+}
 
+@Composable
+fun LoadingIndicator() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator()
     }
 }

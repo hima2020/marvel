@@ -1,7 +1,5 @@
 package org.rawafedtech.marvelapp.utils
 
-import org.rawafedtech.marvelapp.data.model.CharacterItem
-
 
 interface Paginator<Key, Item> {
     suspend fun loadNextItems()
@@ -16,13 +14,13 @@ class DefaultPaginator<Key, Item>(
     private inline val getNextKey: suspend (List<Item>) -> Key,
     private inline val onError: suspend (Throwable?) -> Unit,
     private inline val onSuccess: suspend (items: List<Item>, newKey: Key) -> Unit
-): Paginator<Key, Item> {
+) : Paginator<Key, Item> {
 
     private var currentKey = initialKey
     private var isMakingRequest = false
 
     override suspend fun loadNextItems() {
-        if(isMakingRequest) {
+        if (isMakingRequest) {
             return
         }
         isMakingRequest = true

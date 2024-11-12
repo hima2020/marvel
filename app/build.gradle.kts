@@ -16,11 +16,9 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-
         buildConfigField("String", "public_key", "\"082f6426bdd8e2645731fbb226271bd6\"")
-        buildConfigField ("String", "private_key", "\"99f753cb33c0a32fd95e4cd9e7fce40b8a243d59\"")
-        buildConfigField ("String", "base_url", "\"https://gateway.marvel.com/v1/public/\"")
+        buildConfigField("String", "private_key", "\"99f753cb33c0a32fd95e4cd9e7fce40b8a243d59\"")
+        buildConfigField("String", "base_url", "\"https://gateway.marvel.com/v1/public/\"")
 
         vectorDrawables {
             useSupportLibrary = true
@@ -45,7 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig=true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -62,6 +60,7 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.coil.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.foundation)
     //compose
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
@@ -78,45 +77,40 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.room.ktx)
 
-    //test
-    //androidTestImplementation(libs.androidx.ui.test.junit4)
-// Needed for createComposeRule, but not createAndroidComposeRule:
+    // animations
+
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    // implementation(libs.androidx.ui.test.junit4.android)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.inline)
-    //For runBlockingTest, CoroutineDispatcher etc.
     testImplementation(libs.kotlinx.coroutines.test)
-    //For InstantTaskExecutorRule
     testImplementation(libs.androidx.core.testing)
-    // Core library
     androidTestImplementation(libs.androidx.core)
     implementation(libs.lottie.compose)
     implementation(libs.shimmer.compose)
-// AndroidJUnitRunner and JUnit Rules
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestUtil(libs.androidx.test.orchestrator)
+    implementation(libs.androidx.animation)
+    implementation(libs.androidx.animation.core)
 
-    // chucker
-    debugImplementation ("com.github.chuckerteam.chucker:library:4.0.0")
-    releaseImplementation ("com.github.chuckerteam.chucker:library-no-op:4.0.0")
+    debugImplementation(libs.library)
+    releaseImplementation(libs.library.no.op)
 
 
     // moshi
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation(libs.converter.moshi)
     //noinspection KaptUsageInsteadOfKsp
-    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.14.0")
+    ksp(libs.moshi.kotlin.codegen)
 
-    implementation("com.squareup.retrofit2:adapter-rxjava3:2.9.0")
+    implementation(libs.adapter.rxjava3)
 
 
     // hashing
-    implementation ("xerces:xercesImpl:2.12.2")
-    implementation ("javax.xml.bind:jaxb-api:2.3.1")
+    implementation(libs.xercesimpl)
+    implementation(libs.jaxb.api)
 
 
 // Assertions

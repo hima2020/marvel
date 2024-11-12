@@ -9,10 +9,10 @@ plugins {
 }
 configurations.all {
     resolutionStrategy {
-        force("androidx.core:core:1.13.1")
+        force("androidx.core:core:1.12.0")
     }
-    allprojects{
-        repositories{
+    allprojects {
+        repositories {
             google()
             mavenCentral()
         }
