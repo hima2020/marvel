@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder
 import org.rawafedtech.marvelapp.data.model.CharacterItem
 import org.rawafedtech.marvelapp.presentation.details.view.CharacterDetailScreen
 import org.rawafedtech.marvelapp.presentation.home.view.HomeScreen
+import org.rawafedtech.marvelapp.presentation.search.view.SearchScreen
 
 @Composable
 fun NavigationStack() {
@@ -25,6 +26,9 @@ fun NavigationStack() {
             val userJson = navBackStackEntry.arguments?.getString("character")
             val character = gson.fromJson(userJson, CharacterItem::class.java)
             CharacterDetailScreen(navController = navController, selectedCharacterItem = character)
+        }
+        composable(route = NavigationScreens.Search.screenRoute) {
+            SearchScreen(navController = navController)
         }
 
     }
