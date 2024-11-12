@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">MarvelAppTask</string>
-    <string name="empty">Oooooh no data !!!</string>
+    <string name="empty">Loading...</string>
 </resources>

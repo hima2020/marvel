@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -64,7 +69,7 @@ fun SearchScreen(
                     if (i >= viewModel.statePaging.items.size - 1 && !viewModel.statePaging.endReached && !viewModel.statePaging.isLoading) {
                         viewModel.loadNextItems(searchingWord = viewModel.word)
                     }
-                    CharacterItem(
+                    CharachterSearchItem(
                         character = item,
                         navController = navController
                     )
@@ -91,12 +96,13 @@ fun SearchScreen(
 }
 
 @Composable
-fun CharacterItem(
+fun CharachterSearchItem(
     character: CharacterItem,
     navController: NavController
 ) {
-    Box(modifier = Modifier
+    Row(modifier = Modifier
         .fillMaxWidth()
+        .background(Color.DarkGray)
         .clickable {
             navController.navigate(
                 NavigationScreens.Details.screenRoute + "?character=${
@@ -111,30 +117,26 @@ fun CharacterItem(
             contentDescription = character.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
+                .size(100.dp)
         )
-
         Column(
             modifier = Modifier
-                .align(Alignment.BottomStart)
                 .padding(15.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .clip(ParallelogramShape(slantAngle = 15f)) // Apply the custom parallelogram shape
-                    .background(White)
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = character.name ?: "",
-                    color = colorResource(R.color.black),
+                    color = colorResource(R.color.white),
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
 
             }
         }
+
 
     }
 }
