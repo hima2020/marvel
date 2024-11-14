@@ -4,7 +4,7 @@
 An Android app that displaying marvel characters.
 
 # Application version
-[you can download the apk from here](https://i.diawi.com/FhsTMt)
+[you can download the apk from here](https://i.diawi.com/dyKogR)
 
 In addition, the project:
 * displaying **Marvel Details** with its comics, series, events stories.
